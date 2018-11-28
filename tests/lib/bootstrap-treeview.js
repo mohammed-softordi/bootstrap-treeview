@@ -47,6 +47,13 @@
 		onhoverColor: '#F5F5F5',
 		selectedColor: '#FFFFFF',
 		selectedBackColor: '#428bca',
+
+		indentNode: false,
+		customSelectedStyle: undefined,
+		expandedColor: undefined,
+		expandedBackColor: undefined,
+		decorator: undefined,
+
 		searchResultColor: '#D9534F',
 		searchResultBackColor: undefined, //'#FFFFFF',
 
@@ -511,6 +518,13 @@
 		var _this = this;
 		$.each(nodes, function addNodes(id, node) {
 
+			if(_this.options.decorator && _this.options.decorator instanceof Function) {
+				node = _this.options.decorator(node, level);
+			}
+			if(!node){
+				return true;
+			}
+
 			var treeItem = $(_this.template.item)
 				.addClass('node-' + _this.elementId)
 				.addClass(node.state.checked ? 'node-checked' : '')
@@ -522,7 +536,11 @@
 
 			// Add indent/spacer to mimic tree structure
 			for (var i = 0; i < (level - 1); i++) {
-				treeItem.append(_this.template.indent);
+				if (_this.options.indentNode) {
+					treeItem.css(_this.buildNodeIndentStyle(treeItem, level));
+				} else {
+					treeItem.append(_this.template.indent);
+				}
 			}
 
 			// Add expand, collapse or empty spacer icons
@@ -582,7 +600,7 @@
 			}
 
 			// Add text
-			if (_this.options.enableLinks) {
+			if (_this.options.enableLinks && node.selectable) {
 				// Add hyperlink
 				treeItem
 					.append($(_this.template.link)
@@ -627,6 +645,11 @@
 		var backColor = node.backColor;
 
 		if (this.options.highlightSelected && node.state.selected) {
+
+			if (this.options.customSelectedStyle) {
+				return this.options.customSelectedStyle;
+			}
+
 			if (this.options.selectedColor) {
 				color = this.options.selectedColor;
 			}
@@ -644,11 +667,28 @@
 			}
 		}
 
+		if (this.options.highlightSelected && node.state.expanded) {
+			if (this.options.expandedColor) {
+				color = this.options.expandedColor;
+			}
+			if (this.options.expandedBackColor) {
+				backColor = this.options.expandedBackColor;
+			}
+		}
+
 		return 'color:' + color +
 			';background-color:' + backColor + ';';
 	};
 
-	// Add inline style into head
+		// Define indentation on node children level overriding the default indent
+	Tree.prototype.buildNodeIndentStyle = function (treeItem, level) {
+		var extraIndent = level === 3 ? 0 : 5 * (level -2);
+		var margin = level > 2 ? (10 * level) + extraIndent + 'px' : 10 + 'px';
+
+		return {'margin-left': margin, 'margin-right': 0};
+	};
+
+		// Add inline style into head
 	Tree.prototype.injectStyle = function () {
 
 		if (this.options.injectStyle && !document.getElementById(this.styleId)) {
@@ -674,6 +714,9 @@
 		}
 		else if (this.options.borderColor) {
 			style += 'border:1px solid ' + this.options.borderColor + ';';
+		}
+		else if (this.options.customSelectedStyle) {
+			style += this.options.customSelectedStyle + ';';
 		}
 		style += '}';
 
@@ -1085,7 +1128,7 @@
 
 		$.each(identifiers, $.proxy(function (index, identifier) {
 			callback(this.identifyNode(identifier), options);
-		}, this));	
+		}, this));
 	};
 
 	/*
