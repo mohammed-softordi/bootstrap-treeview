@@ -50,6 +50,7 @@
 
 		indentNode: false,
 		customSelectedStyle: undefined,
+		customExpandedStyle: undefined,
 		expandedColor: undefined,
 		expandedBackColor: undefined,
 		decorator: undefined,
@@ -668,6 +669,9 @@
 		}
 
 		if (this.options.highlightSelected && node.state.expanded) {
+			if (this.options.customExpandedStyle) {
+				return this.options.customExpandedStyle;
+			}
 			if (this.options.expandedColor) {
 				color = this.options.expandedColor;
 			}

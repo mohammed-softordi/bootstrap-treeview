@@ -335,6 +335,16 @@ Sets the foreground color of the selected node.
 #### selectedBackColor
 String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal.asp).  Default: '#428bca'.
 
+#### indentNode
+Boolean. Default false.
+
+Whether or not the indentation should be made on the list item element or on the span element inside the list item.
+#### customSelectedStyle
+String Any valid css rule. Default undefined,
+		expandedColor: undefined,
+		expandedBackColor: undefined,
+		decorator: undefined,
+
 Sets the background color of the selected node.
 
 #### selectedColor
