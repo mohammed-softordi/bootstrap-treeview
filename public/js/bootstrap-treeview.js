@@ -153,7 +153,10 @@
 
 			// Search methods
 			search: $.proxy(this.search, this),
-			clearSearch: $.proxy(this.clearSearch, this)
+			clearSearch: $.proxy(this.clearSearch, this),
+
+			// set data
+			setData: $.proxy(this.setData, this)
 		};
 	};
 
@@ -1274,6 +1277,17 @@
 			}
 		}
 	};
+
+	/**
+	 Refresh the data
+	 @param {Array} data - The new data to apply to the tree
+	 */
+	Tree.prototype.setData = function (data) {
+		this.tree = $.extend(true, [], options.data);
+		this.setInitialStates({ nodes: this.tree }, 0);
+		this.render();
+	};
+
 
 	var logError = function (message) {
 		if (window.console) {
